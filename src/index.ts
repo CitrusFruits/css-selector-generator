@@ -11,10 +11,10 @@ import { SELECTOR_SEPARATOR } from "./constants.js";
 /**
  * Generates unique CSS selector for an element.
  */
-export function getCssSelector(
+export function getCssSelectorNoFallback(
   needle: Element | Element[],
   custom_options: CssSelectorGeneratorOptionsInput = {},
-): CssSelector {
+): CssSelector | undefined {
   const elements = sanitizeSelectorNeedle(needle as unknown);
   const options = sanitizeOptions(elements[0], custom_options);
   const root = options.root ?? getRootNode(elements[0]);
@@ -52,7 +52,15 @@ export function getCssSelector(
       .join(SELECTOR_SEPARATOR);
   }
 
-  return getFallbackSelector(elements);
+}
+
+export function getCssSelector(
+  needle: Element | Element[],
+  custom_options: CssSelectorGeneratorOptionsInput = {},
+): CssSelector {
+  const selector = getCssSelectorNoFallback(needle, custom_options);
+  return selector ?? getFallbackSelector(sanitizeSelectorNeedle(needle as unknown));
+
 }
 
 export default getCssSelector;
